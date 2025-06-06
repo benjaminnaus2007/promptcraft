@@ -1,0 +1,272 @@
+{% raw %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PromptCraft – AI Prompt Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="PromptCraft: Create professional AI prompts easily for scientists, teachers, students, and engineers.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            font-family: 'Inter', Arial, sans-serif;
+            color: #eaf6ff;
+            background: #0a1833;
+            overflow-x: hidden;
+        }
+        .bg-video {
+            position: fixed;
+            top: 0; left: 0;
+            min-width: 100vw;
+            min-height: 100vh;
+            width: auto;
+            height: auto;
+            z-index: -2;
+            object-fit: cover;
+            filter: brightness(0.28) blur(2px) saturate(1.2);
+        }
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: linear-gradient(120deg, rgba(10,24,51,0.97) 0%, rgba(20,40,80,0.92) 100%);
+            z-index: -1;
+        }
+        .navbar {
+            width: 100%;
+            background: rgba(10,24,51,0.92);
+            border-bottom: 1px solid rgba(60,90,180,0.10);
+            backdrop-filter: blur(8px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 32px;
+            height: 64px;
+        }
+        .navbar .logo {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #7fd7ff;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px #0a1833;
+        }
+        .hero {
+            margin-top: 80px;
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 32px 16px 24px 16px;
+            border-radius: 32px;
+            background: rgba(20,32,60,0.85);
+            box-shadow: 0 8px 40px 0 rgba(20,40,80,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.10);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero:before {
+            content: "";
+            position: absolute;
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 180%;
+            background: radial-gradient(circle, #1e90ff 0%, #7fd7ff 60%, transparent 100%);
+            opacity: 0.10;
+            z-index: 0;
+        }
+        .hero-title {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #7fd7ff;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 16px #0a1833;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-desc {
+            font-size: 1.18rem;
+            color: #eaf6ff;
+            font-weight: 500;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 8px #0a1833;
+        }
+        .container {
+            max-width: 700px;
+            margin: 30px auto 40px auto;
+            background: rgba(20,32,60,0.88);
+            border-radius: 24px;
+            box-shadow: 0 8px 40px 0 rgba(20,40,80,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.10);
+            padding: 48px 32px 32px 32px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(6px);
+        }
+        .container:before {
+            content: "";
+            position: absolute;
+            top: -80px; left: -80px;
+            width: 200px; height: 200px;
+            background: radial-gradient(circle, #1e90ff 0%, transparent 70%);
+            opacity: 0.10;
+            z-index: 0;
+        }
+        h1 {
+            text-align: center;
+            color: #7fd7ff;
+            margin-bottom: 32px;
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 16px #0a1833;
+        }
+        form { position: relative; z-index: 1; }
+        label {
+            display: block;
+            margin-top: 18px;
+            font-weight: 600;
+            color: #b3e0ff;
+            font-size: 1.08rem;
+            text-shadow: 0 1px 8px #0a1833;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px 14px;
+            margin-top: 7px;
+            border-radius: 10px;
+            border: 1.5px solid #1e90ff;
+            font-size: 1rem;
+            background: rgba(10,24,51,0.85);
+            color: #eaf6ff;
+            transition: border 0.2s, background 0.2s;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+        }
+        input:focus, textarea:focus {
+            border: 1.5px solid #7fd7ff;
+            background: rgba(20,40,80,0.95);
+        }
+        textarea { min-height: 60px; resize: vertical; }
+        .required { color: #ffb3b3; font-size: 1.1em; margin-left: 2px; }
+        .submit-btn {
+            margin-top: 36px;
+            width: 100%;
+            background: linear-gradient(90deg, #1e90ff 0%, #7fd7ff 100%);
+            color: #0a1833;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 12px 0 rgba(30,144,255,0.10);
+            transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            background: linear-gradient(90deg, #7fd7ff 0%, #1e90ff 100%);
+            color: #0a1833;
+            box-shadow: 0 6px 24px 0 rgba(30,144,255,0.18);
+        }
+        .result {
+            margin-top: 38px;
+            background: linear-gradient(90deg, rgba(30,144,255,0.12) 0%, rgba(127,215,255,0.10) 100%);
+            border-radius: 12px;
+            padding: 22px;
+            font-size: 1.13rem;
+            white-space: pre-wrap;
+            box-shadow: 0 2px 12px 0 rgba(30,144,255,0.07);
+            border: 1.5px solid #1e90ff;
+            color: #eaf6ff;
+        }
+        .result b { color: #7fd7ff; }
+        .error {
+            color: #ffb3b3;
+            background: #2a1a1a;
+            border: 1.5px solid #ffb3b3;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7fd7ff;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+        }
+        @media (max-width: 800px) {
+            .container, .hero { margin: 90px 8px 32px 8px; padding: 32px 8px 24px 8px; }
+        }
+        @media (max-width: 500px) {
+            .navbar { padding: 0 10px; }
+            .container, .hero { margin: 80px 2px 20px 2px; padding: 18px 2vw 12px 2vw; }
+            h1, .hero-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <video class="bg-video" autoplay muted loop playsinline>
+        <source src="https://videos.pexels.com/video-files/857195/857195-hd_1920_1080_25fps.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+    <nav class="navbar">
+        <div class="logo">PromptCraft</div>
+    </nav>
+    <div class="hero">
+        <div class="hero-title">PromptCraft: AI Prompt Writer</div>
+        <div class="hero-desc">
+            Built for scientists, teachers, students, and engineers.<br>
+            Effortlessly craft the perfect AI prompt to tackle your toughest questions.<br>
+            Get clear, actionable, and creative results—no matter how complex your challenge.
+        </div>
+    </div>
+    <div class="container">
+        <h1>AI Prompt Generator</h1>
+        <form method="post">
+            <label for="about">What do you want the AI to do?<span class="required">*</span></label>
+            <textarea id="about" name="about" placeholder="e.g. Write a cover letter for a marketing internship." required>{{ request.form.get('about', '') }}</textarea>
+            
+            <label for="role">What would you like the AI to act like?</label>
+            <input type="text" id="role" name="role" placeholder="e.g. A professional scientist, a creative teacher, a helpful engineer..." value="{{ request.form.get('role', '') }}">
+            
+            <label for="goal">What’s the main goal or outcome you want?</label>
+            <input type="text" id="goal" name="goal" placeholder="e.g. Get an interview, inspire creativity, explain a concept simply..." value="{{ request.form.get('goal', '') }}">
+            
+            <label for="audience">Who is this for?</label>
+            <input type="text" id="audience" name="audience" placeholder="e.g. A hiring manager, a 10-year-old, a group of engineers..." value="{{ request.form.get('audience', '') }}">
+            
+            <label for="style">What style or tone should it have?</label>
+            <input type="text" id="style" name="style" placeholder="e.g. Friendly, formal, motivational, step-by-step, bullet points..." value="{{ request.form.get('style', '') }}">
+            
+            <label for="focus">What’s one thing to avoid or emphasize?</label>
+            <input type="text" id="focus" name="focus" placeholder="e.g. No jargon, keep it under 200 words, focus on practical tips, be funny..." value="{{ request.form.get('focus', '') }}">
+            
+            <label for="twist">Optional: Add a fun twist, inspiration, or example.</label>
+            <input type="text" id="twist" name="twist" placeholder="e.g. Make it sound like Yoda, here’s a sample I like: ..." value="{{ request.form.get('twist', '') }}">
+            
+            <label for="hope">What’s your biggest hope or worry about the result?</label>
+            <input type="text" id="hope" name="hope" placeholder="e.g. I hope it’s clear, I’m worried it’ll be boring, I want it to stand out..." value="{{ request.form.get('hope', '') }}">
+            
+            <button type="submit" class="submit-btn">✨ Generate Prompt</button>
+        </form>
+        {% if result %}
+            <div class="result"><b>Generated Prompt:</b><br><br>{{ result }}</div>
+        {% elif error %}
+            <div class="result error"><b>Error:</b> {{ error }}</div>
+        {% endif %}
+    </div>
+    <div class="footer">PromptCraft © 2025</div>
+</body>
+</html>
+{% endraw %}
